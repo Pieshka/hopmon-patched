@@ -1,6 +1,6 @@
 #  Patches  for  Hopmon  2.0
 
-> Polska wersja README dostępna [tutaj](https://github.com/Pieshka/hopmon-patched/README.PL.md)
+> Polska wersja README dostępna [tutaj](https://github.com/Pieshka/hopmon-patched/blob/main/README.PL.md)
 
 This repository contains patches for the game [Hopmon 2.0](http://saitogames.com/hopmon/index.htm) by Saito Games. Hopmon is an older game from 2001, created mainly for DirectX 7. It uses music composed by T. Kinoshita on Roland SK-88 Pro. Around 2020, James Saito released Hopmon as freeware, so anyone can download and play it. Unfortunately, even though the developer has adapted the game for newer Windows systems, some components still cause problems.
 
