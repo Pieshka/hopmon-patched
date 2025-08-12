@@ -30,15 +30,19 @@ Jeżeli nie chcesz korzystać z moich łatek i wolisz przygotować sobie samemu 
 
 ### Patch music
 Domyślnie funkcja `PlayMidi` korzysta z `mciSendString` do odtwarzania muzyki i wywołuje ją w taki sposób:
+
 ![PREV_PLAY_MIDI.png](.github/PREV_PLAY_MIDI.png)
 
 Obecność `type sequencer` wymusza traktowanie pliku wejściowego jako sekwencyjnego typu MIDI. Należy wykasować to ze stringa. Zmodyfikowana funkcja powinna wyglądać tak:
+
 ![NEW_PLAY_MIDI.png](.github/NEW_PLAY_MIDI.png)
 
 Ponadto w `XApplication::Create()` należy zmienić ładowanie ścieżek do plików i podmienić wpisy `.mid` w nazwach plików na `.mp3`:
+
 ![PREV_MIDI_LIST.png](.github/PREV_MIDI_LIST.png)
 
 Po zmodyfikowaniu ścieżki powinny wyglądać tak:
+
 ![NEW_MP3_LIST.png](.github/NEW_MP3_LIST.png)
 
 Dzięki tej modyfikacji gra zamiast plików MIDI, będzie odtwarzać pliki MP3. Istnieje również opcja odtwarzania plików WAV. Wystarczy zmienić nazwy z `.mid` na `.wav`.
@@ -47,15 +51,19 @@ Dzięki tej modyfikacji gra zamiast plików MIDI, będzie odtwarzać pliki MP3. 
 W funkcji `UpdateDialogControls` podczas wypełniania opcji dialogowych pomijane są rozdzielczości większe od 1280x960 oraz głębie bitowe inne niż 16-bit. 
 
 Kod assemblera wygląda jak na poniższym obrazku. Najpierw mamy operacje sprawdzające górną granicę rozdzielczości, a potem operacje sprawdzające głębię bitową.
+
 ![PREV_RESOLUTION.png](.github/PREV_RESOLUTION.png)
 
 Możemy całkowicie usunąć sprawdzanie głębi bitowej, a w jej miejsce dołożyć kod, który będzie wyświetlał głębię w menu dialogowym. Czyli zamiast `1920 x 1080` będzie się wyświetlać `1920x1080x32`. Jest to o tyle konieczne, że będą się wyświetlać głębie 16-bitowe i 32-bitowe (a może i inne), więc dobrze by było wiedzieć co i jak. Po zmianie kod wygląda tak:
+
 ![NEW_RES_CHANGE.png](.github/NEW_RES_CHANGE.png)
 
 Przy czym należy też zmienić stringa formatującego który dostarczany jest do funkcji `wsprintfA()`. Domyślnie wygląda on tak:
+
 ![PREV_RES_STRING.png](.github/PREV_RES_STRING.png)
 
 A my musimy dodać do niego trzecią liczbę w ten sposób:
+
 ![NEW_RES_STRING.png](.github/NEW_RES_STRING.png)
 
 ### Patch PL base

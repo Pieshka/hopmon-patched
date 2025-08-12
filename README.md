@@ -33,15 +33,19 @@ If  you  don't  want  to  use  my  patches  and  prefer  to  prepare  the  appro
 
 ### Music patch
 By default, the `PlayMidi` function uses `mciSendString` to play music and calls it like this:
+
 ![PREV_PLAY_MIDI.png](.github/PREV_PLAY_MIDI.png)
 
 The presence of `type sequencer` forces the input file to be treated as a sequential MIDI type. This should be deleted from the string. The modified function should look like this:
+
 ![NEW_PLAY_MIDI.png](.github/NEW_PLAY_MIDI.png)
 
 In addition, in `XApplication::Create()`, change the loading of paths to files and replace `.mid` entries in file names with `.mp3`:
+
 ![PREV_MIDI_LIST.png](.github/PREV_MIDI_LIST.png)
 
 After modification, the paths should look like this:
+
 ![NEW_MP3_LIST.png](.github/NEW_MP3_LIST.png)
 
 Thanks to this modification, the game will play MP3 files instead of MIDI files. There is also an option to play WAV files. Just change the names from `.mid` to `.wav`.
@@ -50,12 +54,15 @@ Thanks to this modification, the game will play MP3 files instead of MIDI files.
 In the `UpdateDialogControls` function, resolutions greater than 1280x960 and bit depths other than 16-bit are ignored when filling in dialogue options.
 
 The assembler code looks like the image below. First, we have operations that check the upper limit of the resolution, followed by operations that check the bit depth.
+
 ![PREV_RESOLUTION.png](.github/PREV_RESOLUTION.png)
 
 We can completely remove the bit depth check and replace it with code that will display the depth in the dialogue menu. So instead of `1920 x 1080`, `1920x1080x32` will be displayed. This is necessary because 16-bit and 32-bit depths (and maybe others) will be displayed, so it would be good to know what and how. After the change, the code looks like this:
+
 ![NEW_RES_CHANGE.png](.github/NEW_RES_CHANGE.png)
 
 You also need to change the formatting string that is passed to the `wsprintfA()` function. By default, it looks like this:
+
 ![PREV_RES_STRING.png](.github/PREV_RES_STRING.png)
 
 And we need to add a third number to it like this:
