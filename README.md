@@ -14,9 +14,9 @@ For this reason, I decided to rework this repo to make it â€˜copyright friendlyâ
 ## Changes to the executable file
 There are three (four) sets of patches available:
 * `music` - changes the `PlayMidi` function so that it plays MP3 files instead of MIDI sequence files. The files `Music01.mp3`, `Music02.mp3`, `Music03.mp3` and `Music04.mp3` must be present in the directory containing the .exe file - available for download in the Releases tab.
-* `resolution` - increases the resolution limit from 1280x960 to 4096x4096. In  addition,  the  basic  game  enforces  16-bit  colour  depth,  which  caused  Hopmon  to  stutter  terribly  on  newer  systems  and  graphics  cards.  DDrawCompact  fixed  this,  but  it  turns  out  that  after  removing  the  limit  and  selecting  32-bit  colour  depth,  everything  works  correctly  without  additional  libraries. So the patch adds the ability to select 32-bit colour depth (actually any colour depth, but for me only 32-bit and 16-bit are displayed).
+* `resolution` - removes the resolution cap completely. In  addition,  the  basic  game  enforces  16-bit  colour  depth,  which  caused  Hopmon  to  stutter  terribly  on  newer  systems  and  graphics  cards.  DDrawCompact  fixed  this,  but  it  turns  out  that  after  removing  the  limit  and  selecting  32-bit  colour  depth,  everything  works  correctly  without  additional  libraries. So the patch adds the ability to select 32-bit colour depth (actually any colour depth, but for me only 32-bit and 16-bit are displayed).
 * `combined` - contains the above patches
-* `base` - patch available only in Polish, adds the Polish language based on the 2002 translation by TopWare Interactive, without introducing the above changes.
+* `base` - patch available only in Polish, adds the Polish language based on the 2002 translation by Hopmons' polish publisher - TopWare Interactive, without introducing the above changes.
 
 ##  Installation  instructions
 1.  Download  [Hopmon  2.0](http://saitogames.com/hopmon/index.htm)  and  install  it  on  your  system.
@@ -57,16 +57,64 @@ The assembler code looks like the image below. First, we have operations that ch
 
 ![PREV_RESOLUTION.png](.github/PREV_RESOLUTION.png)
 
-We can completely remove the bit depth check and replace it with code that will display the depth in the dialogue menu. So instead of `1920 x 1080`, `1920x1080x32` will be displayed. This is necessary because 16-bit and 32-bit depths (and maybe others) will be displayed, so it would be good to know what and how. After the change, the code looks like this:
-
-![NEW_RES_CHANGE.png](.github/NEW_RES_CHANGE.png)
-
-You also need to change the formatting string that is passed to the `wsprintfA()` function. By default, it looks like this:
-
-![PREV_RES_STRING.png](.github/PREV_RES_STRING.png)
-
-And we need to add a third number to it like this:
-![NEW_RES_STRING.png](.github/NEW_RES_STRING.png)
+We can completely remove any resolution and bit depth checks. With the available space, we can write custom format string for `wsprintfA()` to allow showing bit depth in the game launcher. This assembly shows how the patch is implemented and where in the code:
+```asm
+                             LAB_004052b7                                    XREF[2]:     004052ad(j), 004052b3(j)  
+        004052b7 eb 35           JMP        LAB_004052ee
+        004052b9 25 6c 64        ds         "%ld x %ld - %ldbit"
+                 20 78 20 
+                 25 6c 64 
+        004052cc 00              ??         00h
+        004052cd 73              ??         73h    s
+        004052ce 02              ??         02h
+        004052cf eb              ??         EBh
+        004052d0 a5              ??         A5h
+        004052d1 eb              ??         EBh
+        004052d2 1b              ??         1Bh
+        004052d3 a8              ??         A8h
+        004052d4 81              ??         81h
+        004052d5 7a              ??         7Ah    z
+        004052d6 0c              ??         0Ch
+        004052d7 00              ??         00h
+        004052d8 10              ??         10h
+        004052d9 00              ??         00h
+        004052da 00              ??         00h
+        004052db 77              ??         77h    w
+        004052dc 0c              ??         0Ch
+        004052dd 8b              ??         8Bh
+        004052de 45              ??         45h    E
+        004052df a8              ??         A8h
+        004052e0 81              ??         81h
+        004052e1 78              ??         78h    x
+        004052e2 08              ??         08h
+        004052e3 00              ??         00h
+        004052e4 10              ??         10h
+        004052e5 00              ??         00h
+        004052e6 00              ??         00h
+        004052e7 76              ??         76h    v
+        004052e8 02              ??         02h
+        004052e9 eb              ??         EBh
+        004052ea 8b              ??         8Bh
+        004052eb 90              ??         90h
+        004052ec 90              ??         90h
+        004052ed 90              ??         90h
+                             LAB_004052ee                                    XREF[1]:     004052b7(j)  
+        004052ee 8b 55 a8        MOV        EDX,dword ptr [EBP + -0x58]
+        004052f1 8b 42 54        MOV        EAX,dword ptr [EDX + 0x54]
+        004052f4 67 50           PUSH       EAX
+        004052f6 8b 55 a8        MOV        EDX,dword ptr [EBP + dev_mode]
+        004052f9 8b 42 08        MOV        EAX,dword ptr [EDX + 0x8]
+        004052fc 50              PUSH       EAX
+        004052fd 8b 4d a8        MOV        ECX,dword ptr [EBP + dev_mode]
+        00405300 8b 51 0c        MOV        EDX,dword ptr [ECX + 0xc]
+        00405303 52              PUSH       EDX
+        00405304 68 b9 52        PUSH       0x4052b9
+                 40 00
+        00405309 8d 45 ac        LEA        EAX=>res_text,[EBP + -0x54]
+        0040530c 50              PUSH       EAX
+        0040530d ff 15 3c        CALL       dword ptr [->USER32.DLL::wsprintfA]              = 00084bf6
+                 32 47 00
+```
 
 ###  Polish base patch
 The  translation  of  the  binary  into  Polish  is  based  on  replacing  resources  using  tools  such  as  [Risoh  Editor](https://github.com/katahiromz/RisohEditor).  Image  files  and  dialogue  boxes  in  Polish  are  available  in  the [Releases](https://github.com/Pieshka/hopmon-patched/releases) tab in the `hopmon-polish-resources.zip` file. The files have names that correspond to resource identifiers, so it will be very easy to replace them. Personally, I think the Polish images are ugly (especially the final congratulations).

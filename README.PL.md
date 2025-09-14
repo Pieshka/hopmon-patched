@@ -11,7 +11,7 @@ Z tego powodu postanowiłem przerobić to repo, aby było "copyright friendly", 
 ## Zmiany w pliku wykonywalnym
 Dostępne są trzy (cztery) zestawy łatek:
 * `music` - zmienia funkcję `PlayMidi`, żeby zamiast plików sekwencyjnych MIDI, odtwarzała pliki MP3. Wymagane jest aby w katalogu z plikiem .exe znajdowały się pliki `Music01.mp3`, `Music02.mp3`, `Music03.mp3` oraz `Music04.mp3` - dostępne do pobrania w zakładce Releases.
-* `resolution` - zwiększa limit rozdzielczości z 1280x960 na 4096x4096. Dodatkowo podstawowa gra wymusza 16-bitową głębię kolorów przez co na nowszych systemach i kartach graficznych Hopmon okropnie klatkował. DDrawCompact to naprawiał ale okazuje się, że po zdjęciu limitu i wybraniu 32-bitowej głębi kolorów, wszystko poprawnie działa bez dodatkowych bibliotek. Zatem patch dodaje możliwość wybrania 32-bitowej głębi kolorów (właściwie to dowolnej głębi kolorów, ale u mnie się wyświetlają tylko 32-bitowa i 16-bitowa).
+* `resolution` - usuwa całkowicie limit rozdzielczości. Dodatkowo podstawowa gra wymusza 16-bitową głębię kolorów przez co na nowszych systemach i kartach graficznych Hopmon okropnie klatkował. DDrawCompact to naprawiał ale okazuje się, że po zdjęciu limitu i wybraniu 32-bitowej głębi kolorów, wszystko poprawnie działa bez dodatkowych bibliotek. Zatem patch dodaje możliwość wybrania 32-bitowej głębi kolorów (właściwie to dowolnej głębi kolorów, ale u mnie się wyświetlają tylko 32-bitowa i 16-bitowa).
 * `combined` - zawiera powyższe patche w sobie
 * `base` - łatka dostępna jedynie w języku polskim, dodaje sam język polski na bazie tłumaczenia wydawnictwa TopWare Interactive z 2002 roku, bez wprowadzania powyższych zmian.
 
@@ -54,17 +54,64 @@ Kod assemblera wygląda jak na poniższym obrazku. Najpierw mamy operacje sprawd
 
 ![PREV_RESOLUTION.png](.github/PREV_RESOLUTION.png)
 
-Możemy całkowicie usunąć sprawdzanie głębi bitowej, a w jej miejsce dołożyć kod, który będzie wyświetlał głębię w menu dialogowym. Czyli zamiast `1920 x 1080` będzie się wyświetlać `1920x1080x32`. Jest to o tyle konieczne, że będą się wyświetlać głębie 16-bitowe i 32-bitowe (a może i inne), więc dobrze by było wiedzieć co i jak. Po zmianie kod wygląda tak:
-
-![NEW_RES_CHANGE.png](.github/NEW_RES_CHANGE.png)
-
-Przy czym należy też zmienić stringa formatującego który dostarczany jest do funkcji `wsprintfA()`. Domyślnie wygląda on tak:
-
-![PREV_RES_STRING.png](.github/PREV_RES_STRING.png)
-
-A my musimy dodać do niego trzecią liczbę w ten sposób:
-
-![NEW_RES_STRING.png](.github/NEW_RES_STRING.png)
+Możemy całkowicie usunąć wszelkie weryfikacje rozdzielczości i głębi bitowej. Z dostępną przestrzenią, możemy napisać własny format stringa dla funkcji `wsprintfA()`, aby móc wyświetlać głębię bitową w lanuncherze gry. Poniżej znajduje się kod assemblera, który pokazuje jak ta łatka została zaimplementowana w kodzie:
+```asm
+                             LAB_004052b7                                    XREF[2]:     004052ad(j), 004052b3(j)  
+        004052b7 eb 35           JMP        LAB_004052ee
+        004052b9 25 6c 64        ds         "%ld x %ld - %ldbit"
+                 20 78 20 
+                 25 6c 64 
+        004052cc 00              ??         00h
+        004052cd 73              ??         73h    s
+        004052ce 02              ??         02h
+        004052cf eb              ??         EBh
+        004052d0 a5              ??         A5h
+        004052d1 eb              ??         EBh
+        004052d2 1b              ??         1Bh
+        004052d3 a8              ??         A8h
+        004052d4 81              ??         81h
+        004052d5 7a              ??         7Ah    z
+        004052d6 0c              ??         0Ch
+        004052d7 00              ??         00h
+        004052d8 10              ??         10h
+        004052d9 00              ??         00h
+        004052da 00              ??         00h
+        004052db 77              ??         77h    w
+        004052dc 0c              ??         0Ch
+        004052dd 8b              ??         8Bh
+        004052de 45              ??         45h    E
+        004052df a8              ??         A8h
+        004052e0 81              ??         81h
+        004052e1 78              ??         78h    x
+        004052e2 08              ??         08h
+        004052e3 00              ??         00h
+        004052e4 10              ??         10h
+        004052e5 00              ??         00h
+        004052e6 00              ??         00h
+        004052e7 76              ??         76h    v
+        004052e8 02              ??         02h
+        004052e9 eb              ??         EBh
+        004052ea 8b              ??         8Bh
+        004052eb 90              ??         90h
+        004052ec 90              ??         90h
+        004052ed 90              ??         90h
+                             LAB_004052ee                                    XREF[1]:     004052b7(j)  
+        004052ee 8b 55 a8        MOV        EDX,dword ptr [EBP + -0x58]
+        004052f1 8b 42 54        MOV        EAX,dword ptr [EDX + 0x54]
+        004052f4 67 50           PUSH       EAX
+        004052f6 8b 55 a8        MOV        EDX,dword ptr [EBP + dev_mode]
+        004052f9 8b 42 08        MOV        EAX,dword ptr [EDX + 0x8]
+        004052fc 50              PUSH       EAX
+        004052fd 8b 4d a8        MOV        ECX,dword ptr [EBP + dev_mode]
+        00405300 8b 51 0c        MOV        EDX,dword ptr [ECX + 0xc]
+        00405303 52              PUSH       EDX
+        00405304 68 b9 52        PUSH       0x4052b9
+                 40 00
+        00405309 8d 45 ac        LEA        EAX=>res_text,[EBP + -0x54]
+        0040530c 50              PUSH       EAX
+        0040530d ff 15 3c        CALL       dword ptr [->USER32.DLL::wsprintfA]              = 00084bf6
+                 32 47 00
+```
 
 ### Patch PL base
 Tłumaczenie binarki na język polski opiera się na podmianie zasobów za pomocą narzędzi typu [Risoh Editor](https://github.com/katahiromz/RisohEditor). Pliki graficzne i okna dialogowe w języku polskim są dostępne w zakładce [Releases](https://github.com/Pieshka/hopmon-patched/releases) w pliku `hopmon-polish-resources.zip`. Pliki mają nazwy, które odpowiadają identyfikatorom zasobów, więc będzie bardzo łatwo je podmienić. Osobiście uważam, że polskie grafiki są brzydkie (szczególnie gratulacje końcowe).
