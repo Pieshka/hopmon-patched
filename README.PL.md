@@ -25,6 +25,8 @@ Dostępne są trzy (cztery) zestawy łatek:
 7. Jeżeli wybrałeś łatki `music` lub `combined` to pobierz z zakładki [Releases](https://github.com/Pieshka/hopmon-patched/releases) paczkę `hopmon-music.zip` i wypakuj znajdujące się w niej pliki MP3 bezpośrednio do katalogu z grą, tak żeby plik `Hopmon.exe` oraz pliki MP3 były obok siebie. Na tym etapie możesz usunąć pliki `.mid` ponieważ nie będą potrzebne.
 8. Wszystkie pobrane pliki zip i paczki można bezpiecznie usunąć.
 
+> **UWAGA!** Może zaistnieć konieczność instalacji dodatkowych kodeków w systemie do obsługi plików MP3. Przetestowany został K-Lite Mega Codec Pack, ale prawdopodobnie dowolna paczka kodeków dostarczająca kodeki w formacie Media Foundation Platform, będą działać. Prawdopodobnie przekodowanie plików MP3 do starszego formatu również by zadziałało.
+
 ## Sposób ręcznego przygotowania
 Jeżeli nie chcesz korzystać z moich łatek i wolisz przygotować sobie samemu odpowiedni plik wykonywalny, to podążaj za tą sekcją. Jest ona jednak przeznaczona dla osób, które się znają na reverse engineering, więc będę zakładał, że wiesz o co chodzi. Ja tylko wskażę konkretne modyfikacji w kodzie.
 

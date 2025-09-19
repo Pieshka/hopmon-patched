@@ -28,6 +28,8 @@ There are three (four) sets of patches available:
 7. If you chose the `music` or `combined` patches, download the `hopmon-music.zip` package from the [Releases](https://github.com/Pieshka/hopmon-patched/releases) tab and extract the MP3 files it contains directly to the game directory so that the `Hopmon.exe` file and the MP3 files are next to each other. At this stage, you can delete the `.mid` files as they will not be needed.
 8. All downloaded zip files and packages can be safely deleted.
 
+> **NOTE!** You may need to install additional codecs on your system to support MP3 files. K-Lite Mega Codec Pack has been tested, but any codec pack that provides codecs in Media Foundation Platform format will likely work. Probably reencoding music files to older revision of the MP3 standard would also work.
+
 ##  Manual  preparation  method
 If  you  don't  want  to  use  my  patches  and  prefer  to  prepare  the  appropriate  executable  file  yourself,  follow  this  section.  However,  it  is  intended  for  people  who  are  familiar  with  reverse  engineering,  so  I  will  assume  that  you  know  what  it  is  about.  I  will  only  point  out  specific  modifications  in  the  code.
 
